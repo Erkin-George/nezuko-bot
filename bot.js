@@ -80,43 +80,43 @@ function tenRolls() //response if we're out of rolls
 function ReRoll() //Reroll sketchy memes
 {
     try {
-    	if (oldIndex.length() == 10) //If we've tried everything, give up
+    	if (oldIndexes.length() == 10) //If we've tried everything, give up
     	{
     	    tenRolls();
             return;
     	}
-        var rollBool = false;
+        
         r.getSubreddit(config.subreddit).getTop({time: 'day'}, {limit: 10}).then(myListing => {
-    	    oldindexes.push(index); //Add the last roll to the list
+    	    oldIndexes.push(index); //Add the last roll to the list
             index = Math.floor(Math.random() * 10); //roll again
-       	    for(let i = 0; i < oldIndexs.length; i++) //check the whole list 
+            let rollBool = false;
+       	    do
             {
-                if (index != oldIndexs[i])
+                for(let i = 0; i < oldIndexes.length; i++) //check the whole list 
                 {
-                    rollBool = true;
-                    break;    
-        	    }
-        	}
-            if(!rollBool)
-            {
-                tenRolls(); //If we tried everything and it's all bad, give up
-                return;
-            } 
-            else //print if we did find something
-            { 
-                const channel = client.channels.get(config.channelId);
-                channel.send(myListing[index].url);
-
-                client.on('message', message =>{
-                    if(message.channel == channel)
+                    if (index != oldIndexes[i])
                     {
-                        if(message.author.id == client.user.id)
-                        {
-                            global_message_id = message.id;
-                        }
+                        rollBool = true;
+                        break;    
+            	    }
+            	}
+                if(!rollBool){
+                    index = Math.floor(Math.random() * 10); //roll again
+                }
+            } while (!rollBool) //Reroll until it works. Shouldn't be infinite because it can't get here if we have no options but it might take forever
+                                //Possibly add a count that breaks if >50 attempts or something
+            const channel = client.channels.get(config.channelId); //print when it finds something
+            channel.send(myListing[index].url);
+
+            client.on('message', message =>{
+                if(message.channel == channel)
+                {
+                    if(message.author.id == client.user.id)
+                    {
+                        global_message_id = message.id;
                     }
-                })
-            }
+                }
+            })
         })
     } catch (error) {
         console.log('There has been a problem with your fetch operation: ', error.message);
