@@ -80,7 +80,7 @@ function tenRolls() //response if we're out of rolls
 function ReRoll() //Reroll sketchy memes
 {
     try {
-    	if (oldIndexes.length() == 10) //If we've tried everything, give up
+    	if (oldIndexes.length == 10) //If we've tried everything, give up
     	{
     	    tenRolls();
             return;
