@@ -35,11 +35,11 @@ const r = new snoowrap({
   
 //Get posts from subreddit and posts it to the correct channel
 var index = 0; //Declare index here so it persists to ReRoll
-var oldIndexes = [0]; //Same but so it persists between ReRolls - this keeps track of what indexs we already rolled
+var oldIndexes = []; //Same but so it persists between ReRolls - this keeps track of what indexs we already rolled
 
 new CronJob('00 20 16 * * *', function() {
     try {
-	oldIndexes = [0] //Clear for the new day
+	oldIndexes = [] //Clear for the new day
         r.getSubreddit(config.subreddit).getTop({time: 'day'}, {limit: 10}).then(myListing => {
             index = Math.floor(Math.random() * 10);
             const channel = client.channels.get(config.channelId);
@@ -78,34 +78,40 @@ function tenRolls() //response if we're out of rolls
 }
 
 function ReRoll() //Reroll sketchy memes
-{
+{ // (){ is the superior format but okay boomer
     try {
-    	if (oldIndexes.length == 10) //If we've tried everything, give up
+        oldIndexes.push(index); //Add the last roll to the list
+    	if (oldIndexes.length >= 10) //If we've tried everything, give up
     	{
     	    tenRolls();
             return;
     	}
         
         r.getSubreddit(config.subreddit).getTop({time: 'day'}, {limit: 10}).then(myListing => {
-    	    oldIndexes.push(index); //Add the last roll to the list
+    	    
+            console.log("oldIndexes are :")
+            for (let i = 0; i < oldIndexes.length; i++) {
+                console.log(oldIndexes[i]);
+            }
+            console.log(index)
             index = Math.floor(Math.random() * 10); //roll again
-            let rollBool = false;
-       	    do
+            var rollBool = true; //assume the meme is new
+            do
             {
+                var rollBool = true; //reset when looping
                 for(let i = 0; i < oldIndexes.length; i++) //check the whole list 
                 {
-                    if (index != oldIndexes[i])
+                    if (index == oldIndexes[i]) //If the index is the same as any index
                     {
-                        rollBool = true;
+                        rollBool = false; //reject it
                         break;    
             	    }
             	}
-                if(!rollBool){
-                    index = Math.floor(Math.random() * 10); //roll again
+                if(!rollBool){ //if rejected, roll again
+                    index = Math.floor(Math.random() * 10);
                 }
-            } while (!rollBool) //Reroll until it works. Shouldn't be infinite because it can't get here if we have no options but it might take forever
-                                //Possibly add a count that breaks if >50 attempts or something
-            const channel = client.channels.get(config.channelId); //print when it finds something
+            }while(!rollBool) //continue until rollBool is not changed to false
+            const channel = client.channels.get(config.channelId); //post when it finds something
             channel.send(myListing[index].url);
 
             client.on('message', message =>{
