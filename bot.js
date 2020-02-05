@@ -37,7 +37,7 @@ const r = new snoowrap({
 var index = 0; //Declare index here so it persists to ReRoll
 var oldIndexes = []; //Same but so it persists between ReRolls - this keeps track of what indexs we already rolled
 
-new CronJob('00 20 16 * * *', function() {
+new CronJob('00 20 16 * * *', function(){
     try {
 	oldIndexes = [] //Clear for the new day
         r.getSubreddit(config.subreddit).getTop({time: 'day'}, {limit: 10}).then(myListing => {
@@ -61,28 +61,23 @@ new CronJob('00 20 16 * * *', function() {
     }
 }, null, true, 'America/Los_Angeles');
 
-function tenRolls() //response if we're out of rolls
-{
+function tenRolls(){ //response if we're out of rolls
     const channel = client.channels.get(config.channelId);
     channel.send("みんなさ, すみません Minasan, sumimasen! We're out of rerolls for the day.");
 
     client.on('message', message =>{
-        if(message.channel == channel)
-        {
-            if(message.author.id == client.user.id)
-            {
+        if(message.channel == channel){
+            if(message.author.id == client.user.id){
                 global_message_id = message.id;
             }
         }
     })
 }
 
-function ReRoll() //Reroll sketchy memes
-{ // (){ is the superior format but okay boomer
+function ReRoll(){ //Reroll sketchy memes
     try {
         oldIndexes.push(index); //Add the last roll to the list
-    	if (oldIndexes.length >= 10) //If we've tried everything, give up
-    	{
+    	if (oldIndexes.length >= 10){ //If we've tried everything, give up
     	    tenRolls();
             return;
     	}
@@ -96,13 +91,11 @@ function ReRoll() //Reroll sketchy memes
             console.log(index)
             index = Math.floor(Math.random() * 10); //roll again
             var rollBool = true; //assume the meme is new
-            do
-            {
+            do{
                 var rollBool = true; //reset when looping
-                for(let i = 0; i < oldIndexes.length; i++) //check the whole list 
-                {
-                    if (index == oldIndexes[i]) //If the index is the same as any index
-                    {
+                for(let i = 0; i < oldIndexes.length; i++){ //check the whole list 
+
+                    if (index == oldIndexes[i]){ //If the index is the same as any index
                         rollBool = false; //reject it
                         break;    
             	    }
@@ -115,10 +108,8 @@ function ReRoll() //Reroll sketchy memes
             channel.send(myListing[index].url);
 
             client.on('message', message =>{
-                if(message.channel == channel)
-                {
-                    if(message.author.id == client.user.id)
-                    {
+                if(message.channel == channel){
+                    if(message.author.id == client.user.id){
                         global_message_id = message.id;
                     }
                 }
@@ -132,18 +123,15 @@ function ReRoll() //Reroll sketchy memes
 //function HeadPat()
 //{
     client.on('message',message =>{
-        if(message.content.includes('headpat') && message.isMemberMentioned(client.user))
-        {
-            var bite_chance = Math.floor(Math.random() * 1000);
+        if(message.content.includes('headpat') && message.isMemberMentioned(client.user)){
+            var bite_chance = Math.floor(Math.random() * 100);
             var person = message.member;
             console.log(bite_chance);
-            if(bite_chance == 69)
-            {
+            if(bite_chance == 69){
                 message.channel.send('RAWWWWRRR!');
                 message.channel.send(person.toString());
             }
-            else
-            {
+            else {
                 var noises = ['(◡ ω ◡)','Nyaaaaaa','<3','(｡◕‿‿◕｡)'];
                 var rand = noises[Math.floor(Math.random() * noises.length)];
                 console.log(rand);
@@ -154,12 +142,10 @@ function ReRoll() //Reroll sketchy memes
     })
 //}
 
-client.on('message', message =>
-{
+client.on('message', message =>{
     if((message.content.includes("nani the fuck") && message.isMemberMentioned(client.user)) || (message.content.includes("what the fuck") && message.isMemberMentioned(client.user)) ||
     (message.content.includes("what the heck") && message.isMemberMentioned(client.user)) || (message.content.includes("nani the heck") && message.isMemberMentioned(client.user))
-    )
-    {
+    ){
         message.channel.send("ごめんなさい Gomen'nasai!");
         try{
             
