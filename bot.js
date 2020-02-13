@@ -32,7 +32,7 @@ const r = new snoowrap({
   });
 
 
-  
+
 //Get posts from subreddit and posts it to the correct channel
 var index = 0; //Declare index here so it persists to ReRoll
 var oldIndexes = []; //Same but so it persists between ReRolls - this keeps track of what indexs we already rolled
@@ -81,9 +81,9 @@ function ReRoll(){ //Reroll sketchy memes
     	    tenRolls();
             return;
     	}
-        
+
         r.getSubreddit(config.subreddit).getTop({time: 'day'}, {limit: 10}).then(myListing => {
-    	    
+
             console.log("oldIndexes are :")
             for (let i = 0; i < oldIndexes.length; i++) {
                 console.log(oldIndexes[i]);
@@ -93,11 +93,11 @@ function ReRoll(){ //Reroll sketchy memes
             var rollBool = true; //assume the meme is new
             do{
                 var rollBool = true; //reset when looping
-                for(let i = 0; i < oldIndexes.length; i++){ //check the whole list 
+                for(let i = 0; i < oldIndexes.length; i++){ //check the whole list
 
                     if (index == oldIndexes[i]){ //If the index is the same as any index
                         rollBool = false; //reject it
-                        break;    
+                        break;
             	    }
             	}
                 if(!rollBool){ //if rejected, roll again
@@ -123,7 +123,8 @@ function ReRoll(){ //Reroll sketchy memes
 //function HeadPat()
 //{
     client.on('message',message =>{
-        if(message.content.includes('headpat') && message.isMemberMentioned(client.user)){
+		var regex = new RegExp('headpat', 'gi');
+        if(message.content.match(regex) != null && message.isMemberMentioned(client.user)){
             var bite_chance = Math.floor(Math.random() * 100);
             var person = message.member;
             console.log(bite_chance);
@@ -143,12 +144,11 @@ function ReRoll(){ //Reroll sketchy memes
 //}
 
 client.on('message', message =>{
-    if((message.content.includes("nani the fuck") && message.isMemberMentioned(client.user)) || (message.content.includes("what the fuck") && message.isMemberMentioned(client.user)) ||
-    (message.content.includes("what the heck") && message.isMemberMentioned(client.user)) || (message.content.includes("nani the heck") && message.isMemberMentioned(client.user))
-    ){
+	var regex = new RegExp('(nani|what) the (frick|heck|fuck)', 'gi');
+    if(message.content.match(regex) != null && message.isMemberMentioned(client.user)){
         message.channel.send("ごめんなさい Gomen'nasai!");
         try{
-            
+
             // var channel = client.channels.get(complaint_id)
             console.log('here is global id during the wtf');
             console.log(global_message_id);
