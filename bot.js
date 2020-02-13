@@ -1,28 +1,24 @@
-// require the discord.js module
 const Discord = require('discord.js');
-
-//grab config file
 const config = require('./config.json');
+const snoowrap = require('snoowrap');
+const client = new Discord.Client();
+const maxLinks = 10;
 
 var CronJob = require('cron').CronJob;
+var redditLinks = [];
 
-// create a new Discord client
-const client = new Discord.Client();
+global.last_discord_post_id = "";
 
-const snoowrap = require('snoowrap');
-
-global.global_message_id = "";
-
-// when the client is ready, run this code
-// this event will only trigger one time after logging in
+// When the client is ready, run this code
+// This event will only trigger one time after logging in
 client.once('ready', () => {
-	console.log('Ready!');
+    console.log('Ready!');
 });
 
-// login to Discord with your app's token
+// Login to Discord with your app's token
 client.login(config.token);
 
-//setup oAuth for Reddit Api calls
+// Setup oAuth for Reddit Api calls
 const r = new snoowrap({
     userAgent: "A Discord Bot that ocassionally posts content links from given subreddits to Discord (by u/ShadowAssassin96",
     clientId: config.clientId,
@@ -31,133 +27,103 @@ const r = new snoowrap({
     password: config.password
 });
 
-
-//Get posts from subreddit and posts it to the correct channel
-var index = 0; //Declare index here so it persists to ReRoll
-var oldIndexes = []; //Same but so it persists between ReRolls - this keeps track of what indexs we already rolled
-
+// Job runs at 16:20:00 every day
+// Gets all the image links of the day and puts them in a random order
 new CronJob('00 20 16 * * *', function() {
     try {
-	oldIndexes = [] //Clear for the new day
-        r.getSubreddit(config.subreddit).getTop({time: 'day'}, {limit: 10}).then(myListing => {
-            index = Math.floor(Math.random() * 10);
-            const channel = client.channels.get(config.channelId);
-            channel.send(myListing[index].url);
+        r.getSubreddit(config.subreddit).getTop({time: 'day'}, {limit: maxLinks}).then(topPosts => {
+            var post;
+            for (post of topPosts) {
+                redditLinks.push(post.url);
+            }
 
-            client.on('message', message => {
-                if(message.channel == channel) {
-                    if(message.author.id == client.user.id) {
-                        global_message_id = message.id;
-                    }
-                }
-            })
+            // Sort in random order
+            redditLinks.sort(function(a, b) {
+                return 0.5 - Math.random()
+            });
+
+            // Send first link
+            sendNextPost();
         })
     } catch (error) {
         console.log('There has been a problem with your fetch operation: ', error.message);
     }
 }, null, true, 'America/Los_Angeles');
 
-function tenRolls() { //response if we're out of rolls
-    const channel = client.channels.get(config.channelId);
-    channel.send("みんなさ, すみません Minasan, sumimasen! We're out of rerolls for the day.");
+function hasMorePosts() {
+	return redditLinks.length > 0;
+}
 
+// Send the next post from the stack
+// Returns true on success, false if the stack is empty
+function sendNextPost() {
+	if(!hasMorePosts()) {
+		return false;
+	}
+
+	const channel = client.channels.get(config.channelId);
+    channel.send(redditLinks.pop());
+
+    // Record which message we sent last in case we need to delete it
     client.on('message', message => {
-        if(message.channel == channel) {
-            if(message.author.id == client.user.id) {
-                global_message_id = message.id;
-            }
+        if (message.channel == channel && message.author.id == client.user.id) {
+            last_discord_post_id = message.id;
         }
     })
+
+	return true;
 }
 
-function ReRoll() { //Reroll sketchy memes
-    try {
-        oldIndexes.push(index); //Add the last roll to the list
-    	if (oldIndexes.length >= 10) { //If we've tried everything, give up
-    	    tenRolls();
-            return;
-    	}
-        r.getSubreddit(config.subreddit).getTop({time: 'day'}, {limit: 10}).then(myListing => {
-            console.log("oldIndexes are :")
-            for (let i = 0; i < oldIndexes.length; i++) {
-                console.log(oldIndexes[i]);
-            }
-            console.log(index)
-            index = Math.floor(Math.random() * 10); //roll again
-            var rollBool = true; //assume the meme is new
-            do {
-                var rollBool = true; //reset when looping
-                for(let i = 0; i < oldIndexes.length; i++) { //check the whole list
-                    if (index == oldIndexes[i]) { //If the index is the same as any index
-                        rollBool = false; //reject it
-                        break;
-            	    }
-            	}
-                if(!rollBool) { //if rejected, roll again
-                    index = Math.floor(Math.random() * 10);
-                }
-            } while(!rollBool) //continue until rollBool is not changed to false
-            const channel = client.channels.get(config.channelId); //post when it finds something
-            channel.send(myListing[index].url);
+function deletePreviousPost() {
+	try {
+		message.channel.fetchMessage(last_discord_post_id).then(badMessage => badMessage.delete(1000)).catch(console.error);
+		return true;
+	} catch (error) {
+		console.log('Error is: ', error.message);
+	}
 
-            client.on('message', message => {
-                if(message.channel == channel){
-                    if(message.author.id == client.user.id){
-                        global_message_id = message.id;
-                    }
-                }
-            })
-        })
-    } catch (error) {
-        console.log('There has been a problem with your fetch operation: ', error.message);
-    }
+	return false;
 }
 
-//function HeadPat()
-//{
-    client.on('message',message => {
-		var regex = new RegExp('headpat', 'gi');
-        if(message.content.match(regex) != null && message.isMemberMentioned(client.user)) {
-            var bite_chance = Math.floor(Math.random() * 100);
-            var person = message.member;
-            console.log(bite_chance);
-            if(bite_chance == 69) {
-                message.channel.send('RAWWWWRRR!');
-                message.channel.send(person.toString());
-            }
-            else {
-                var noises = ['(◡ ω ◡)','Nyaaaaaa','<3','(｡◕‿‿◕｡)'];
-                var rand = noises[Math.floor(Math.random() * noises.length)];
-                console.log(rand);
-
-                message.channel.send(rand);
-            }
-        }
-    })
-//}
-
+// Headpats
 client.on('message', message => {
-	var regex = new RegExp('(nani|what) the (frick|heck|fuck)', 'gi');
-    if(message.content.match(regex) != null && message.isMemberMentioned(client.user)){
-        message.channel.send("ごめんなさい Gomen'nasai!");
-        try{
-            // var channel = client.channels.get(complaint_id)
-            console.log('here is global id during the wtf');
-            console.log(global_message_id);
+    var regex = new RegExp('headpat', 'gi');
+    if (message.content.match(regex) != null && message.isMemberMentioned(client.user)) {
+        var bite_chance = Math.floor(Math.random() * 100);
+        var person = message.member;
+        console.log(bite_chance);
+        if (bite_chance == 69) {
+            message.channel.send('RAWWWWRRR!');
+            message.channel.send(person.toString());
+        } else {
+            var noises = ['(◡ ω ◡)', 'Nyaaaaaa', '<3', '(｡◕‿‿◕｡)'];
+            var rand = noises[Math.floor(Math.random() * noises.length)];
+            console.log(rand);
 
-            console.log('heres the bad message id');
-            var bad_message = message.channel.fetchMessage(global_message_id).then(bad_message => bad_message.delete(1000)).catch(console.error);
-            message.channel.send('Rerolling, Senpai!');
-            ReRoll();
-
-        } catch (error) {
-            console.log('Error is: ', error.message);
+            message.channel.send(rand);
         }
     }
-    //HeadPat();
 })
 
+// Rerolling
+client.on('message', message => {
+    var regex = new RegExp('(nani|what) the (frick|heck|fuck)', 'gi');
+    if (message.content.match(regex) != null && message.isMemberMentioned(client.user)) {
+        message.channel.send("ごめんなさい Gomen'nasai!");
 
+		if(!deletePreviousPost()) {
+			message.channel.send("I can't delete it!");
+			return;
+		}
+
+		if(hasMorePosts()) {
+        	message.channel.send('Rerolling, Senpai!');
+			sendNextPost();
+		} else {
+		    message.channel.send("みんなさ, すみません Minasan, sumimasen! We're out of rerolls for the day.");
+		}
+    }
+})
 
 //id for hidden channel - 507446071488675854
 //proper channel - 638509044339834900
