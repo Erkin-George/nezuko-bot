@@ -31,7 +31,7 @@ const r = new snoowrap({
 // Gets all the image links of the day and puts them in a random order
 new CronJob('00 20 16 * * *', function() {
     try {
-        r.getSubreddit(config.subreddit).getTop({time: 'day'}, {limit: maxLinks}).then(topPosts => {
+        r.getSubreddit(config.subreddit).getTop({time: 'day', limit: maxLinks}).then(topPosts => {
             var post;
             for (post of topPosts) {
                 redditLinks.push(post.url);
@@ -64,9 +64,10 @@ function sendNextPost() {
 	const channel = client.channels.get(config.channelId);
     channel.send(redditLinks.pop());
 
-    // Record which message we sent last in case we need to delete it
+    // Record the last reddit link we sent last in case we need to delete it
+    var regex = new RegExp('https.*redd', 'gi');
     client.on('message', message => {
-        if (message.channel == channel && message.author.id == client.user.id) {
+        if (message.channel == channel && message.author.id == client.user.id && message.content.match(regex) != null) {
             last_discord_post_id = message.id;
         }
     })
@@ -74,7 +75,7 @@ function sendNextPost() {
 	return true;
 }
 
-function deletePreviousPost() {
+function deletePreviousPost(message) {
 	try {
 		message.channel.fetchMessage(last_discord_post_id).then(badMessage => badMessage.delete(1000)).catch(console.error);
 		return true;
@@ -111,7 +112,7 @@ client.on('message', message => {
     if (message.content.match(regex) != null && message.isMemberMentioned(client.user)) {
         message.channel.send("ごめんなさい Gomen'nasai!");
 
-		if(!deletePreviousPost()) {
+		if(!deletePreviousPost(message)) {
 			message.channel.send("I can't delete it!");
 			return;
 		}
