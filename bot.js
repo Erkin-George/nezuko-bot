@@ -32,7 +32,6 @@ const r = new snoowrap({
   });
 
 
-
 //Get posts from subreddit and posts it to the correct channel
 var index = 0; //Declare index here so it persists to ReRoll
 var oldIndexes = []; //Same but so it persists between ReRolls - this keeps track of what indexs we already rolled
@@ -81,9 +80,7 @@ function ReRoll(){ //Reroll sketchy memes
     	    tenRolls();
             return;
     	}
-
         r.getSubreddit(config.subreddit).getTop({time: 'day'}, {limit: 10}).then(myListing => {
-
             console.log("oldIndexes are :")
             for (let i = 0; i < oldIndexes.length; i++) {
                 console.log(oldIndexes[i]);
@@ -148,7 +145,7 @@ client.on('message', message =>{
     if(message.content.match(regex) != null && message.isMemberMentioned(client.user)){
         message.channel.send("ごめんなさい Gomen'nasai!");
         try{
-
+			
             // var channel = client.channels.get(complaint_id)
             console.log('here is global id during the wtf');
             console.log(global_message_id);
