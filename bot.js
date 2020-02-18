@@ -6,6 +6,7 @@ const maxLinks = 10;
 
 var CronJob = require('cron').CronJob;
 var redditLinks = [];
+var forbiddenLinks = [];
 
 global.last_discord_post_id = "";
 
@@ -35,6 +36,7 @@ new CronJob('00 20 16 * * *', function() {
             var post;
             for (post of topPosts) {
                 redditLinks.push(post.url);
+                forbiddenLinks.push(post.url);
             }
 
             // Sort in random order
@@ -111,8 +113,11 @@ client.on('message', message => {
     var regex = new RegExp('(nani|what) the (frick|heck|fuck)', 'gi');
     if (message.content.match(regex) != null && message.isMemberMentioned(client.user)) {
         message.channel.send("ごめんなさい Gomen'nasai!");
-
-		if(!deletePreviousPost(message)) {
+        
+        const archive = client.channels.find('name', forbidden-archives);
+        archive.send(forbiddenLinks.pop());
+        
+        if(!deletePreviousPost(message)) {
 			message.channel.send("I can't delete it!");
 			return;
 		}
