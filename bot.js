@@ -30,13 +30,13 @@ const r = new snoowrap({
 
 // Job runs at 16:20:00 every day
 // Gets all the image links of the day and puts them in a random order
-new CronJob('00 20 16 * * *', function() {
+new CronJob('00 30 16 * * *', function() {
     try {
         r.getSubreddit(config.subreddit).getTop({time: 'day', limit: maxLinks}).then(topPosts => {
             var post;
             for (post of topPosts) {
                 redditLinks.push(post.url);
-                forbiddenLinks.push(post.url);
+               // forbiddenLinks.push(post.url);
             }
 
             // Sort in random order
@@ -114,8 +114,8 @@ client.on('message', message => {
     if (message.content.match(regex) != null && message.isMemberMentioned(client.user)) {
         message.channel.send("ごめんなさい Gomen'nasai!");
         
-        const archive = client.channels.find('name', forbidden-archives);
-        archive.send(forbiddenLinks.pop());
+        //const archive = client.channels.find('name', forbidden-archives);
+        //archive.send(forbiddenLinks.pop());
         
         if(!deletePreviousPost(message)) {
 			message.channel.send("I can't delete it!");
