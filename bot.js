@@ -107,7 +107,7 @@ function headpat(message) {
 function reroll(message) {
     message.channel.send("ごめんなさい Gomen'nasai!");
     
-    if(!deletePreviousPost()) {
+    if(!deletePreviousPost(message.author)) {
         message.channel.send("I can't delete it!");
         return;
     }
@@ -120,15 +120,20 @@ function reroll(message) {
     }
 }
 
-function deletePreviousPost() {
+function deletePreviousPost(requester) {
     if(messageHistory.length === 0) {
         return true;
     }
 
-    let result;
-    messageHistory.pop().delete()
-    .catch((reason) => {
-        console.log('Could not delete message ' + reason);
+    let degenerateMessage = messageHistory.pop();
+    const archiveChannel = client.channels.get(config.archiveId);
+
+    archiveChannel.send('Post deletion requested by ' + requester.username + '\n' + degenerateMessage.content)
+    .then(() => {
+        degenerateMessage.delete()
+        .catch((reason) => {
+            console.log('Could not delete message ' + reason);
+        })
     })
 
     return true;
