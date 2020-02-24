@@ -6,9 +6,7 @@ const maxLinks = 10;
 
 var CronJob = require('cron').CronJob;
 var redditLinks = [];
-var forbiddenLinks = [];
-
-global.last_discord_post_id = "";
+var messageHistory = [];
 
 // When the client is ready, run this code
 // This event will only trigger one time after logging in
@@ -30,27 +28,44 @@ const r = new snoowrap({
 
 // Job runs at 16:20:00 every day
 // Gets all the image links of the day and puts them in a random order
-new CronJob('00 20 16 * * *', function() {
-    try {
-        r.getSubreddit(config.subreddit).getTop({time: 'day', limit: maxLinks}).then(topPosts => {
-            var post;
-            for (post of topPosts) {
-                redditLinks.push(post.url);
-                forbiddenLinks.push(post.url);
-            }
-
-            // Sort in random order
-            redditLinks.sort(function(a, b) {
-                return 0.5 - Math.random()
-            });
-
-            // Send first link
-            sendNextPost();
-        })
-    } catch (error) {
-        console.log('There has been a problem with your fetch operation: ', error.message);
-    }
+new CronJob('00 20 16 * * *', () => {
+    fetchPosts();
 }, null, true, 'America/Los_Angeles');
+
+client.on('message', message => {
+    if(!message.isMemberMentioned(client.user) || message.author.bot) {
+        return;
+    }
+    
+    if (message.content.match(/(headpat|head pat)/gi) != null) {
+        headpat(message);
+    }
+    else if(message.content.match(/(nani|what) the (frick|heck|fuck)/gi)) {
+        reroll(message);
+    }
+    else if(message.content.match(/meme please/gi)) {
+        fetchPosts();
+    }
+})
+
+function fetchPosts() {
+    r.getSubreddit(config.subreddit).getTop({time: 'day', limit: maxLinks})
+    .then(topPosts => {
+        var post;
+        for (post of topPosts) {
+            redditLinks.push(post.url);
+        }
+
+        // Sort in random order
+        redditLinks.sort(() => { return 0.5 - Math.random() });
+
+        // Send first link
+        sendNextPost();
+    })
+    .catch((reason) => {
+        console.error('There has been a problem with your fetch operation: ', reason);
+    })
+}
 
 function hasMorePosts() {
 	return redditLinks.length > 0;
@@ -63,76 +78,67 @@ function sendNextPost() {
 		return false;
 	}
 
-	const channel = client.channels.get(config.channelId);
-    channel.send(redditLinks.pop());
-
-    // Record the last reddit link we sent last in case we need to delete it
-    var regex = new RegExp('https.*redd', 'gi');
-    client.on('message', message => {
-        if (message.channel == channel && message.author.id == client.user.id && message.content.match(regex) != null) {
-            last_discord_post_id = message.id;
-        }
+    const channel = client.channels.get(config.channelId);
+    
+    channel.send(redditLinks.pop())
+    .then(message => {
+        messageHistory.push(message);
     })
 
 	return true;
 }
 
-function deletePreviousPost(message) {
-	try {
-		message.channel.fetchMessage(last_discord_post_id).then(badMessage => badMessage.delete(1000)).catch(console.error);
-		return true;
-	} catch (error) {
-		console.log('Error is: ', error.message);
-	}
+function headpat(message) {
+    var bite_chance = Math.floor(Math.random() * 100);
+    var person = message.member;
+    console.log(bite_chance);
+    if (bite_chance == 69) {
+        message.channel.send('RAWWWWRRR!');
+        message.channel.send(person.toString());
+    } else {
+        var noises = ['(◡ ω ◡)', 'Nyaaaaaa', '<3', '(｡◕‿‿◕｡)'];
+        var rand = noises[Math.floor(Math.random() * noises.length)];
+        console.log(rand);
 
-	return false;
+        message.channel.send(rand);
+    }
 }
 
-// Headpats
-client.on('message', message => {
-    var regex = new RegExp('headpat', 'gi');
-    if (message.content.match(regex) != null && message.isMemberMentioned(client.user)) {
-        var bite_chance = Math.floor(Math.random() * 100);
-        var person = message.member;
-        console.log(bite_chance);
-        if (bite_chance == 69) {
-            message.channel.send('RAWWWWRRR!');
-            message.channel.send(person.toString());
-        } else {
-            var noises = ['(◡ ω ◡)', 'Nyaaaaaa', '<3', '(｡◕‿‿◕｡)'];
-            var rand = noises[Math.floor(Math.random() * noises.length)];
-            console.log(rand);
-
-            message.channel.send(rand);
-        }
+function reroll(message) {
+    message.channel.send("ごめんなさい Gomen'nasai!");
+    
+    if(!deletePreviousPost(message.author)) {
+        message.channel.send("I can't delete it!");
+        return;
     }
-})
 
-// Rerolling
-client.on('message', message => {
-    var regex = new RegExp('(nani|what) the (frick|heck|fuck)', 'gi');
-    if (message.content.match(regex) != null && message.isMemberMentioned(client.user)) {
-        message.channel.send("ごめんなさい Gomen'nasai!");
-        
-        const archive = client.channels.find('name', forbidden-archives);
-        archive.send(forbiddenLinks.pop());
-        
-        if(!deletePreviousPost(message)) {
-			message.channel.send("I can't delete it!");
-			return;
-		}
-
-		if(hasMorePosts()) {
-        	message.channel.send('Rerolling, Senpai!');
-			sendNextPost();
-		} else {
-		    message.channel.send("みんなさ, すみません Minasan, sumimasen! We're out of rerolls for the day.");
-		}
+    if(hasMorePosts()) {
+        message.channel.send('Rerolling, Senpai!');
+        sendNextPost();
+    } else {
+        message.channel.send("みんなさ, すみません Minasan, sumimasen! We're out of rerolls for the day.");
     }
-})
+}
 
-//id for hidden channel - 507446071488675854
-//proper channel - 638509044339834900
+function deletePreviousPost(requester) {
+    if(messageHistory.length === 0) {
+        return true;
+    }
+
+    let degenerateMessage = messageHistory.pop();
+    const archiveChannel = client.channels.get(config.archiveId);
+
+    archiveChannel.send('Post deletion requested by ' + requester.username + '\n' + degenerateMessage.content)
+    .then(() => {
+        degenerateMessage.delete()
+        .catch((reason) => {
+            console.log('Could not delete message ' + reason);
+        })
+    })
+
+    return true;
+}
+
 client.on("disconnect", function(event) {
     console.log('Bot disconnecting');
     process.exit();
