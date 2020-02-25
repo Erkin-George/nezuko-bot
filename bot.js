@@ -37,6 +37,8 @@ client.on('message', message => {
         return;
     }
     
+    let sender = message.guild.members.get(message.author.id);
+
     if (message.content.match(/(headpat|head pat)/gi) != null) {
         headpat(message);
     }
@@ -44,6 +46,11 @@ client.on('message', message => {
         reroll(message);
     }
     else if(message.content.match(/meme please/gi)) {
+        if(!hasPermission(sender, 'officer')) {
+            angryReact = message.guild.emojis.find(emoji => emoji.name === 'angryzuko');
+            message.channel.send(angryReact.toString());
+            return;
+        }
         fetchPosts();
     }
 })
@@ -137,6 +144,16 @@ function deletePreviousPost(requester) {
     })
 
     return true;
+}
+
+function hasPermission(member, minRoleName) {
+    var minRole = member.guild.roles.find(role => role.name.toLowerCase() === minRoleName.toLowerCase());
+    if(!minRole) {
+        console.log('There is no role \"' + minRoleName);
+        return false;
+    }
+
+    return member.highestRole.comparePositionTo(minRole) >= 0;
 }
 
 client.on("disconnect", function(event) {
