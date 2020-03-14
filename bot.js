@@ -53,6 +53,10 @@ client.on('message', message => {
         }
         fetchPosts();
     }
+    else if(message.content.match(/(boring|lame|try again)/gi)){
+        var willarchive = false;
+        reroll(message,willarchive)
+    }
 })
 
 function fetchPosts() {
@@ -111,10 +115,10 @@ function headpat(message) {
     }
 }
 
-function reroll(message) {
+function reroll(message, willarchive=true) {
     message.channel.send("ごめんなさい Gomen'nasai!");
     
-    if(!deletePreviousPost(message.author)) {
+    if(!deletePreviousPost(message.author,willarchive)) {
         message.channel.send("I can't delete it!");
         return;
     }
@@ -127,22 +131,30 @@ function reroll(message) {
     }
 }
 
-function deletePreviousPost(requester) {
+function deletePreviousPost(requester,willarchive) {
     if(messageHistory.length === 0) {
         return true;
     }
 
     let degenerateMessage = messageHistory.pop();
-    const archiveChannel = client.channels.get(config.archiveId);
 
-    archiveChannel.send('Post deletion requested by ' + requester.username + '\n' + degenerateMessage.content)
-    .then(() => {
-        degenerateMessage.delete()
-        .catch((reason) => {
-            console.log('Could not delete message ' + reason);
+    if(willarchive)
+    {
+        const archiveChannel = client.channels.get(config.archiveId);
+
+        archiveChannel.send('Post deletion requested by ' + requester.username + '\n' + degenerateMessage.content)
+        .then(() => {
+            degenerateMessage.delete()
+            .catch((reason) => {
+                console.log('Could not delete message ' + reason);
+            })
         })
-    })
-
+        return true;
+    }
+        degenerateMessage.delete()
+        .catch((reason)=> {
+            console.log('Could not delete message' + reason);
+        })
     return true;
 }
 
