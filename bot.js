@@ -28,7 +28,7 @@ const r = new snoowrap({
 
 // Job runs at 16:20:00 every day
 // Gets all the image links of the day and puts them in a random order
-new CronJob('00 20 16 * * *', () => {
+new CronJob('00 43 17 * * *', () => {
     fetchPosts();
 }, null, true, 'America/Los_Angeles');
 
@@ -45,6 +45,10 @@ client.on('message', message => {
     }
     else if(message.content.match(/meme please/gi)) {
         fetchPosts();
+    }
+    else if(message.content.match(/(boring|lame|try again)/gi)){
+        var willarchive = false;
+        reroll(message,willarchive)
     }
 })
 
@@ -104,10 +108,10 @@ function headpat(message) {
     }
 }
 
-function reroll(message) {
+function reroll(message, willarchive=true) {
     message.channel.send("ごめんなさい Gomen'nasai!");
     
-    if(!deletePreviousPost(message.author)) {
+    if(!deletePreviousPost(message.author,willarchive)) {
         message.channel.send("I can't delete it!");
         return;
     }
@@ -120,22 +124,30 @@ function reroll(message) {
     }
 }
 
-function deletePreviousPost(requester) {
+function deletePreviousPost(requester,willarchive) {
     if(messageHistory.length === 0) {
         return true;
     }
 
     let degenerateMessage = messageHistory.pop();
-    const archiveChannel = client.channels.get(config.archiveId);
 
-    archiveChannel.send('Post deletion requested by ' + requester.username + '\n' + degenerateMessage.content)
-    .then(() => {
-        degenerateMessage.delete()
-        .catch((reason) => {
-            console.log('Could not delete message ' + reason);
+    if(willarchive)
+    {
+        const archiveChannel = client.channels.get(config.archiveId);
+
+        archiveChannel.send('Post deletion requested by ' + requester.username + '\n' + degenerateMessage.content)
+        .then(() => {
+            degenerateMessage.delete()
+            .catch((reason) => {
+                console.log('Could not delete message ' + reason);
+            })
         })
-    })
-
+        return true;
+    }
+        degenerateMessage.delete()
+        .catch((reason)=> {
+            console.log('Could not delete message' + reason);
+        })
     return true;
 }
 
