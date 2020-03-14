@@ -28,7 +28,7 @@ const r = new snoowrap({
 
 // Job runs at 16:20:00 every day
 // Gets all the image links of the day and puts them in a random order
-new CronJob('00 43 17 * * *', () => {
+new CronJob('00 20 16 * * *', () => {
     fetchPosts();
 }, null, true, 'America/Los_Angeles');
 
