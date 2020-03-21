@@ -7,6 +7,7 @@ const maxLinks = 10;
 var CronJob = require('cron').CronJob;
 var redditLinks = [];
 var messageHistory = [];
+var archiveHistory = [];
 
 // When the client is ready, run this code
 // This event will only trigger one time after logging in
@@ -37,14 +38,27 @@ client.on('message', message => {
         return;
     }
     
+    let sender = message.guild.members.get(message.author.id);
+
     if (message.content.match(/(headpat|head pat)/gi) != null) {
         headpat(message);
     }
     else if(message.content.match(/(nani|what) the (frick|heck|fuck)/gi)) {
-        reroll(message);
+        reroll(message, 'degenerate');
     }
     else if(message.content.match(/meme please/gi)) {
+        if(!hasPermission(sender, 'officer')) {
+            angryReact = message.guild.emojis.find(emoji => emoji.name === 'angryzuko');
+            message.channel.send(angryReact.toString());
+            return;
+        }
         fetchPosts();
+    }
+    else if(message.content.match(/(boring|lame|try again)/gi)) {
+        reroll(message, 'boring');
+    }
+    else if(message.content.match(/(go back|undo)/gi)) {
+        unarchive();
     }
 })
 
@@ -88,6 +102,29 @@ function sendNextPost() {
 	return true;
 }
 
+function unarchive() {
+    // Take the current message and put it back into the queue
+    let currentMsg = messageHistory.pop();
+    redditLinks.push(currentMsg.content);
+    currentMsg.delete()
+    .then(() => {
+        // Get the last archived message and put it back in the channel
+        const channel = client.channels.get(config.channelId);
+        let lastArchived = archiveHistory.pop();
+        if(!lastArchived) {
+            channel.send('ごめんね Gomen-ne. I can\'t go back any further');
+            return;
+        }
+        let matches = lastArchived.content.match(/http.*/);
+        if(!matches) { return; }
+        channel.send(`どうぞ Douzo!\n${matches[0]}`)
+        .then((message) => {
+            messageHistory.push(message);
+            lastArchived.delete();
+        })
+    })
+}
+
 function headpat(message) {
     var bite_chance = Math.floor(Math.random() * 100);
     var person = message.member;
@@ -104,10 +141,10 @@ function headpat(message) {
     }
 }
 
-function reroll(message) {
+function reroll(message, reason) {
     message.channel.send("ごめんなさい Gomen'nasai!");
     
-    if(!deletePreviousPost(message.author)) {
+    if(!deletePreviousPost(message.author, reason)) {
         message.channel.send("I can't delete it!");
         return;
     }
@@ -120,7 +157,7 @@ function reroll(message) {
     }
 }
 
-function deletePreviousPost(requester) {
+function deletePreviousPost(requester, reason) {
     if(messageHistory.length === 0) {
         return true;
     }
@@ -128,15 +165,26 @@ function deletePreviousPost(requester) {
     let degenerateMessage = messageHistory.pop();
     const archiveChannel = client.channels.get(config.archiveId);
 
-    archiveChannel.send('Post deletion requested by ' + requester.username + '\n' + degenerateMessage.content)
-    .then(() => {
-        degenerateMessage.delete()
-        .catch((reason) => {
-            console.log('Could not delete message ' + reason);
-        })
+    archiveChannel.send(`Post deletion requested by ${requester.username}\n> ${reason}\n${degenerateMessage.content}`)
+    .then(message => {
+        archiveHistory.push(message);
+        return degenerateMessage.delete();
     })
-
+    .catch((error) => {
+        console.log('Could not delete message\n' + error);
+    })
+    
     return true;
+}
+
+function hasPermission(member, minRoleName) {
+    var minRole = member.guild.roles.find(role => role.name.toLowerCase() === minRoleName.toLowerCase());
+    if(!minRole) {
+        console.log('There is no role \"' + minRoleName);
+        return false;
+    }
+
+    return member.highestRole.comparePositionTo(minRole) >= 0;
 }
 
 client.on("disconnect", function(event) {
