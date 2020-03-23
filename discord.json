@@ -1,0 +1,22 @@
+{
+    "dev": {
+        "roles": {
+            "dictator":"supreme dictator",
+            "officer":"officer"
+        },
+        "channels": {
+            "welcomeChannelId": "684893729508818997",
+            "generalChannelId": "677378023259111438"
+        }
+    },
+    "prod": {
+        "roles": {
+            "dictator":"supreme dictator",
+            "officer":"officer"
+        },
+        "channels": {
+            "welcomeChannelId": "691436093945544834",
+            "generalChannelId": "507445400236720128"
+        }
+    }
+}
