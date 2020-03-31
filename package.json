@@ -1,5 +1,5 @@
 {
-  "name": "nezuko_bot",
+  "name": "nezuko",
   "version": "1.0.0",
   "description": "This bot uses JS Node to pull a meme from Reddit once a day. The configuration file is not uploaded for security purposes, but it connects the bot with the Reddit API.",
   "main": "bot.js",
@@ -8,12 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Doomfires/nezuko-bot.git"
+    "url": "git+https://github.com/Hashiphoto/nezuko-bot.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Doomfires/nezuko-bot/issues"
+    "url": "https://github.com/Hashiphoto/nezuko-bot/issues"
   },
-  "homepage": "https://github.com/Doomfires/nezuko-bot#readme"
+  "homepage": "https://github.com/Hashiphoto/nezuko-bot#readme",
+  "dependencies": {
+    "cron": "^1.8.2",
+    "discord.js": "^11.5.1",
+    "snoowrap": "^1.21.0"
+  }
 }

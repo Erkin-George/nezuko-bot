@@ -1,0 +1,20 @@
+{
+    "dev": {
+        "reddit": {
+            "subreddit": "animemes"
+        },
+        "discord": {
+            "channelId": "679950087451181086",
+            "archiveId": "681332065022771200"
+        }
+    },
+    "prod": {
+        "reddit": {
+            "subreddit": "animemes"
+        },
+        "discord": {
+            "channelId": "638509044339834900",
+            "archiveId": "671583267157442560"
+        }
+    }
+}

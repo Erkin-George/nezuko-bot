@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
-const config = require('./config.json');
 const snoowrap = require('snoowrap');
+const config = require('./config/config.json')[process.env.NODE_ENV || 'dev'];
+const secrets = require('./config/secrets.json')[process.env.NODE_ENV || 'dev'];
 const client = new Discord.Client();
 const maxLinks = 10;
 
@@ -16,15 +17,18 @@ client.once('ready', () => {
 });
 
 // Login to Discord with your app's token
-client.login(config.token);
+client.login(secrets.discord.token)
+.then(() => {
+    console.log('Logged in!');
+})
 
 // Setup oAuth for Reddit Api calls
 const r = new snoowrap({
-    userAgent: "A Discord Bot that ocassionally posts content links from given subreddits to Discord (by u/ShadowAssassin96",
-    clientId: config.clientId,
-    clientSecret: config.secret,
-    username: config.username,
-    password: config.password
+    userAgent: "A Discord Bot that ocassionally posts content links from given subreddits to Discord",
+    clientId:     secrets.reddit.clientId,
+    clientSecret: secrets.reddit.clientSecret,
+    username:     secrets.reddit.username,
+    password:     secrets.reddit.password
 });
 
 // Job runs at 16:20:00 every day
@@ -63,7 +67,7 @@ client.on('message', message => {
 })
 
 function fetchPosts() {
-    r.getSubreddit(config.subreddit).getTop({time: 'day', limit: maxLinks})
+    r.getSubreddit(config.reddit.subreddit).getTop({time: 'day', limit: maxLinks})
     .then(topPosts => {
         var post;
         for (post of topPosts) {
@@ -92,7 +96,7 @@ function sendNextPost() {
 		return false;
 	}
 
-    const channel = client.channels.get(config.channelId);
+    const channel = client.channels.get(config.discord.channelId);
     
     channel.send(redditLinks.pop())
     .then(message => {
@@ -109,7 +113,7 @@ function unarchive() {
     currentMsg.delete()
     .then(() => {
         // Get the last archived message and put it back in the channel
-        const channel = client.channels.get(config.channelId);
+        const channel = client.channels.get(config.discord.channelId);
         let lastArchived = archiveHistory.pop();
         if(!lastArchived) {
             channel.send('ごめんね Gomen-ne. I can\'t go back any further');
@@ -163,7 +167,7 @@ function deletePreviousPost(requester, reason) {
     }
 
     let degenerateMessage = messageHistory.pop();
-    const archiveChannel = client.channels.get(config.archiveId);
+    const archiveChannel = client.channels.get(config.discord.archiveId);
 
     archiveChannel.send(`Post deletion requested by ${requester.username}\n> ${reason}\n${degenerateMessage.content}`)
     .then(message => {
