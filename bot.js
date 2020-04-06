@@ -67,6 +67,7 @@ client.on('message', message => {
 })
 
 function fetchPosts() {
+    resetPosts();
     r.getSubreddit(config.reddit.subreddit).getTop({time: 'day', limit: maxLinks})
     .then(topPosts => {
         var post;
@@ -83,6 +84,10 @@ function fetchPosts() {
     .catch((reason) => {
         console.error('There has been a problem with your fetch operation: ', reason);
     })
+}
+
+function resetPosts() {
+    redditLinks = [];
 }
 
 function hasMorePosts() {
