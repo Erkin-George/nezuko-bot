@@ -10,11 +10,13 @@ var redditLinks = [];
 var messageHistory = [];
 var archiveHistory = [];
 
+
 // When the client is ready, run this code
 // This event will only trigger one time after logging in
 client.once('ready', () => {
     console.log('Ready!');
 });
+
 
 // Login to Discord with your app's token
 client.login(secrets.discord.token)
@@ -36,6 +38,12 @@ const r = new snoowrap({
 new CronJob('00 20 16 * * *', () => {
     fetchPosts();
 }, null, true, 'America/Los_Angeles');
+
+new CronJob('00 46 14 * * 0', () => {
+    throwBackThursday();
+    console.log("Test");
+}
+);
 
 client.on('message', message => {
     if(!message.isMemberMentioned(client.user) || message.author.bot) {
@@ -73,6 +81,7 @@ function fetchPosts() {
         var post;
         for (post of topPosts) {
             redditLinks.push(post.url);
+            
         }
 
         // Sort in random order
@@ -99,10 +108,9 @@ function hasMorePosts() {
 function sendNextPost() {
 	if(!hasMorePosts()) {
 		return false;
-	}
-
-    const channel = client.channels.get(config.discord.channelId);
+    }  
     
+    const channel = client.channels.get(config.discord.channelId);
     channel.send(redditLinks.pop())
     .then(message => {
         messageHistory.push(message);
@@ -145,7 +153,6 @@ function headpat(message) {
         var noises = ['(◡ ω ◡)', 'Nyaaaaaa', '<3', '(｡◕‿‿◕｡)'];
         var rand = noises[Math.floor(Math.random() * noises.length)];
         console.log(rand);
-
         message.channel.send(rand);
     }
 }
@@ -194,6 +201,11 @@ function hasPermission(member, minRoleName) {
     }
 
     return member.highestRole.comparePositionTo(minRole) >= 0;
+}
+
+function throwBackThursday()
+{
+
 }
 
 client.on("disconnect", function(event) {
