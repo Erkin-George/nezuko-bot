@@ -40,7 +40,7 @@ new CronJob('00 20 16 * * *', () => {
 }, null, true, 'America/Los_Angeles');
 
 //Job runs weekly at 15:00
-new CronJob('00 00 15 * * Thur', () => {
+new CronJob('00 00 15 * * Thu', () => {
     throwBackThursday();
 }, null, true, 'America/Los_Angeles');
 
