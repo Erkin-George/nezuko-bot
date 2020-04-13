@@ -39,9 +39,9 @@ new CronJob('00 20 16 * * *', () => {
     fetchPosts();
 }, null, true, 'America/Los_Angeles');
 
-new CronJob('00 54 15 * * 0', () => {
+//Job runs weekly at 15:00
+new CronJob('00 00 15 * * Thur', () => {
     throwBackThursday();
-    console.log("Test");
 }, null, true, 'America/Los_Angeles');
 
 client.on('message', message => {
@@ -215,7 +215,6 @@ function throwBackThursday()
     const channel = client.channels.get(config.discord.channelId);
     channel.send(config.fixedcontent.throwbackthursdaylink);
     return true;
-
 }
 
 client.on("disconnect", function(event) {
