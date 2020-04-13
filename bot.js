@@ -39,11 +39,10 @@ new CronJob('00 20 16 * * *', () => {
     fetchPosts();
 }, null, true, 'America/Los_Angeles');
 
-new CronJob('00 46 14 * * 0', () => {
+new CronJob('00 54 15 * * 0', () => {
     throwBackThursday();
     console.log("Test");
-}
-);
+}, null, true, 'America/Los_Angeles');
 
 client.on('message', message => {
     if(!message.isMemberMentioned(client.user) || message.author.bot) {
@@ -73,7 +72,8 @@ client.on('message', message => {
         unarchive();
     }
     else if(message.content.match(/thursday/gi)) {
-
+        throwBackThursday();
+        //message.channel.send("https://www.youtube.com/watch?v=Q8hp2IkI2es");
     }
     else {
         confusedReact = message.guild.emojis.find(emoji => emoji.name === 'nezukoconfused')
@@ -212,6 +212,9 @@ function hasPermission(member, minRoleName) {
 
 function throwBackThursday()
 {
+    const channel = client.channels.get(config.discord.channelId);
+    channel.send(config.fixedcontent.throwbackthursdaylink);
+    return true;
 
 }
 
