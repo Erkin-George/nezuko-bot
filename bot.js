@@ -72,6 +72,13 @@ client.on('message', message => {
     else if(message.content.match(/(go back|undo)/gi)) {
         unarchive();
     }
+    else if(message.content.match(/thursday/gi)) {
+
+    }
+    else {
+        confusedReact = message.guild.emojis.find(emoji => emoji.name === 'nezukoconfused')
+        message.channel.send(confusedReact.toString());
+    }
 })
 
 function fetchPosts() {
@@ -109,7 +116,7 @@ function sendNextPost() {
 	if(!hasMorePosts()) {
 		return false;
     }  
-    
+
     const channel = client.channels.get(config.discord.channelId);
     channel.send(redditLinks.pop())
     .then(message => {
