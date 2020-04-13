@@ -6,11 +6,11 @@ There needs to be a config folder, with two files. One is named config.js and th
 ##config
 ```{
     "dev": {
-        `"reddit": {
-          `  "subreddit": "animemes"`
+        "reddit": {
+            "subreddit": "animemes"`
         },
-        `"discord": {
-            `"channelId": "main channel id",`
+        "discord": {
+            "channelId": "main channel id",
             "archiveId": "archive channel id"
         },
         "fixedcontent": {
