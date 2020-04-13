@@ -4,13 +4,13 @@ This bot uses JS Node to pull a meme from Reddit once a day. The configuration f
 There needs to be a config folder, with two files. One is named config.js and the other is named secrets.js. Their layout is as follows:
 
 ##config
-`{
-    "dev": {
-        "reddit": {
-            "subreddit": "animemes"
-        },
-        "discord": {
-            "channelId": "main channel id",
+`{`
+   ` "dev": {`
+        `"reddit": {`
+          `  "subreddit": "animemes"`
+     `   },`
+        `"discord": {`
+            `"channelId": "main channel id",`
             "archiveId": "archive channel id"
         },
         "fixedcontent": {
