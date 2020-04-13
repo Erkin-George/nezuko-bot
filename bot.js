@@ -75,7 +75,7 @@ client.on('message', message => {
         throwBackThursday();
         //message.channel.send("https://www.youtube.com/watch?v=Q8hp2IkI2es");
     }
-    else {
+    else if(message.isMemberMentioned(message.author.bot)){
         confusedReact = message.guild.emojis.find(emoji => emoji.name === 'nezukoconfused')
         message.channel.send(confusedReact.toString());
     }
