@@ -45,7 +45,7 @@ new CronJob('00 00 15 * * Thu', () => {
 }, null, true, 'America/Los_Angeles');
 
 client.on('message', message => {
-    if(!message.isMemberMentioned(client.user) || message.author.bot) {
+    if(!message.isMemberMentioned((client.user) || message.author.bot)) {
         return;
     }
     
@@ -75,7 +75,7 @@ client.on('message', message => {
         throwBackThursday();
         //message.channel.send("https://www.youtube.com/watch?v=Q8hp2IkI2es");
     }
-    else if(message.isMemberMentioned(message.author.bot)){
+    else if(!message.content.match(/here/gi)){
         confusedReact = message.guild.emojis.find(emoji => emoji.name === 'nezukoconfused')
         message.channel.send(confusedReact.toString());
     }
