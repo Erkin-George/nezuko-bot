@@ -10,11 +10,13 @@ var redditLinks = [];
 var messageHistory = [];
 var archiveHistory = [];
 
+
 // When the client is ready, run this code
 // This event will only trigger one time after logging in
 client.once('ready', () => {
     console.log('Ready!');
 });
+
 
 // Login to Discord with your app's token
 client.login(secrets.discord.token)
@@ -37,8 +39,13 @@ new CronJob('00 20 16 * * *', () => {
     fetchPosts();
 }, null, true, 'America/Los_Angeles');
 
+//Job runs weekly at 15:00
+new CronJob('00 00 15 * * Thu', () => {
+    throwBackThursday();
+}, null, true, 'America/Los_Angeles');
+
 client.on('message', message => {
-    if(!message.isMemberMentioned(client.user) || message.author.bot) {
+    if(!message.isMemberMentioned((client.user) || message.author.bot)) {
         return;
     }
     
@@ -64,6 +71,14 @@ client.on('message', message => {
     else if(message.content.match(/(go back|undo)/gi)) {
         unarchive();
     }
+    else if(message.content.match(/thursday/gi)) {
+        throwBackThursday();
+        //message.channel.send("https://www.youtube.com/watch?v=Q8hp2IkI2es");
+    }
+    else if(!message.content.match(/here/gi)){
+        confusedReact = message.guild.emojis.find(emoji => emoji.name === 'nezukoconfused')
+        message.channel.send(confusedReact.toString());
+    }
 })
 
 function fetchPosts() {
@@ -73,6 +88,7 @@ function fetchPosts() {
         var post;
         for (post of topPosts) {
             redditLinks.push(post.url);
+            
         }
 
         // Sort in random order
@@ -99,10 +115,9 @@ function hasMorePosts() {
 function sendNextPost() {
 	if(!hasMorePosts()) {
 		return false;
-	}
+    }  
 
     const channel = client.channels.get(config.discord.channelId);
-    
     channel.send(redditLinks.pop())
     .then(message => {
         messageHistory.push(message);
@@ -145,7 +160,6 @@ function headpat(message) {
         var noises = ['(◡ ω ◡)', 'Nyaaaaaa', '<3', '(｡◕‿‿◕｡)'];
         var rand = noises[Math.floor(Math.random() * noises.length)];
         console.log(rand);
-
         message.channel.send(rand);
     }
 }
@@ -194,6 +208,13 @@ function hasPermission(member, minRoleName) {
     }
 
     return member.highestRole.comparePositionTo(minRole) >= 0;
+}
+
+function throwBackThursday()
+{
+    const channel = client.channels.get(config.discord.channelId);
+    channel.send(config.fixedcontent.throwbackthursdaylink);
+    return true;
 }
 
 client.on("disconnect", function(event) {
