@@ -6,6 +6,9 @@
         "discord": {
             "channelId": "679950087451181086",
             "archiveId": "681332065022771200"
+        },
+        "fixedcontent": {
+            "throwbackthursdaylink": "https://www.youtube.com/watch?v=Q8hp2IkI2es"
         }
     },
     "prod": {
@@ -15,6 +18,9 @@
         "discord": {
             "channelId": "638509044339834900",
             "archiveId": "671583267157442560"
+        },
+        "fixedcontent": {
+            "throwbackthursdaylink": "https://www.youtube.com/watch?v=Q8hp2IkI2es"
         }
     }
 }
