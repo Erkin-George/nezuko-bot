@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const ytdl = require('ydtl-core');
 const snoowrap = require('snoowrap');
 const config = require('./config/config.json')[process.env.NODE_ENV || 'dev'];
 const secrets = require('./config/secrets.json')[process.env.NODE_ENV || 'dev'];
@@ -73,7 +74,6 @@ client.on('message', message => {
     }
     else if(message.content.match(/thursday/gi)) {
         throwBackThursday();
-        //message.channel.send("https://www.youtube.com/watch?v=Q8hp2IkI2es");
     }
     else if(!message.content.match(/here/gi)){
         confusedReact = message.guild.emojis.find(emoji => emoji.name === 'nezukoconfused')
