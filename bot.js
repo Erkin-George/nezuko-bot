@@ -45,6 +45,11 @@ new CronJob('00 00 15 * * Thu', () => {
 	throwBackThursday();
 }, null, true, 'America/Los_Angeles');
 
+// Job runs weekly at 15:00
+new CronJob('00 00 12 * * Mon', () => {
+	manEaterMonday();
+}, null, true, 'America/Los_Angeles');
+
 client.on('message', message => {
 	if(!message.isMemberMentioned((client.user) || message.author.bot)) {
 		return;
@@ -215,6 +220,12 @@ function hasPermission(member, minRoleName) {
 function throwBackThursday() {
 	const channel = client.channels.get(config.discord.channelId);
 	channel.send(config.fixedcontent.throwbackthursdaylink);
+	return true;
+}
+
+function manEaterMonday() {
+	const channel = client.channels.get(config.discord.channelId);
+	channel.send(config.fixedcontent.manEaterMonday);
 	return true;
 }
 
