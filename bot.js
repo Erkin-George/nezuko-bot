@@ -220,6 +220,7 @@ function hasPermission(member, minRoleName) {
 function throwBackThursday() {
 	const channel = client.channels.get(config.discord.channelId);
 	channel.send(config.fixedcontent.throwbackthursdaylink);
+	channel.send('<@' + config.fixedcontent.specialperson + '>');
 	return true;
 }
 
