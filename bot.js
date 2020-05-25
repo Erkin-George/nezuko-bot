@@ -46,7 +46,7 @@ new CronJob('00 00 15 * * Thu', () => {
 }, null, true, 'America/Los_Angeles');
 
 // Job runs weekly at 15:00
-new CronJob('00 00 12 * * Mon', () => {
+new CronJob('00 00 13 * * Mon', () => {
 	manEaterMonday();
 }, null, true, 'America/Los_Angeles');
 
@@ -79,6 +79,9 @@ client.on('message', message => {
 	}
 	else if(message.content.match(/thursday/gi)) {
 		throwBackThursday();
+	}
+	else if(message.content.match(/monday/gi)) {
+		manEaterMonday();
 	}
 	else if(!message.content.match(/here/gi)) {
 		var confusedReact = message.guild.emojis.find(emoji => emoji.name === 'nezukoconfused');
@@ -226,7 +229,7 @@ function throwBackThursday() {
 
 function manEaterMonday() {
 	const channel = client.channels.get(config.discord.channelId);
-	channel.send(config.fixedcontent.manEaterMonday);
+	channel.send(config.fixedcontent.maneatermondaylink);
 	return true;
 }
 
