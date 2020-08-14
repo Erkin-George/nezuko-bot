@@ -1,7 +1,7 @@
 {
     "dev": {
         "reddit": {
-            "subreddit": "animemes"
+            "subreddit": "goodanimemes"
         },
         "discord": {
             "channelId": "679950087451181086",
@@ -17,7 +17,7 @@
     },
     "prod": {
         "reddit": {
-            "subreddit": "animemes"
+            "subreddit": "goodanimemes"
         },
         "discord": {
             "channelId": "638509044339834900",
