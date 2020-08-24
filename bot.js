@@ -37,7 +37,7 @@ const r = new snoowrap({
 // Job runs at 16:20:00 every day
 // Gets all the image links of the day and puts them in a random order
 new CronJob('00 20 16 * * *', () => {
-	fetchPosts();
+	dailyAnimePost();
 }, null, true, 'America/Los_Angeles');
 
 // Job runs weekly at 15:00
@@ -76,7 +76,7 @@ client.on('message', message => {
 			message.channel.send(angryReact.toString());
 			return;
 		}
-		fetchPosts();
+		dailyAnimePost();
 	}
 	else if(message.content.match(/(boring|lame|try again)/gi)) {
 		reroll(message, 'boring');
@@ -101,7 +101,32 @@ client.on('message', message => {
 
 function fetchPosts() {
 	resetPosts();
-	r.getSubreddit(config.reddit.subreddit).getTop({ time: 'day', limit: maxLinks })
+	const randomPos = Math.floor(Math.random() * config.reddit.subreddit.length);
+	var randomSub = config.reddit.subreddit[randomPos];
+	r.getSubreddit(randomSub).getTop({ time: 'day', limit: maxLinks })
+		.then(topPosts => {
+			var post;
+			for (post of topPosts) {
+				redditLinks.push(post.url);
+
+			}
+
+			// Sort in random order
+			redditLinks.sort(() => { return 0.5 - Math.random(); });
+
+			// Send first link
+			sendNextPost();
+		})
+		.catch((reason) => {
+			console.error('There has been a problem with your fetch operation: ', reason);
+		});
+}
+
+function dailyAnimePost() {
+	resetPosts();
+
+	var sub = config.reddit.subreddit[0];
+	r.getSubreddit(sub).getTop({ time: 'day', limit: maxLinks })
 		.then(topPosts => {
 			var post;
 			for (post of topPosts) {
@@ -134,8 +159,7 @@ function sendNextPost() {
 	if(!hasMorePosts()) {
 		return false;
 	}
-
-	const channel = client.channels.get(config.discord.channelId);
+	const channel = client.channels.get(config.discord.animeChannelID);
 	channel.send(redditLinks.pop())
 		.then(message => {
 			messageHistory.push(message);
@@ -151,7 +175,7 @@ function unarchive() {
 	currentMsg.delete()
 		.then(() => {
 			// Get the last archived message and put it back in the channel
-			const channel = client.channels.get(config.discord.channelId);
+			const channel = client.channels.get(config.discord.animeChannelID);
 			let lastArchived = archiveHistory.pop();
 			if(!lastArchived) {
 				channel.send('ごめんね Gomen-ne. I can\'t go back any further');
@@ -231,21 +255,21 @@ function hasPermission(member, minRoleName) {
 }
 
 function throwBackThursday() {
-	const channel = client.channels.get(config.discord.channelId);
+	const channel = client.channels.get(config.discord.animeChannelID);
 	channel.send(config.fixedcontent.throwbackthursdaylink);
 	channel.send('<@' + config.fixedcontent.specialperson + '>');
 	return true;
 }
 
 function manEaterMonday() {
-	const channel = client.channels.get(config.discord.channelId);
+	const channel = client.channels.get(config.discord.animeChannelID);
 	channel.send(config.fixedcontent.maneatermondaylink);
 	return true;
 }
 
 function funkyFriday() {
 	const channel = client.channels.get(config.discord.channelMemes);
-	channel.send(config.fixedcontent.funkyFriday);
+	channel.send(config.fixedcontent.funkyfriday);
 	return true;
 }
 
