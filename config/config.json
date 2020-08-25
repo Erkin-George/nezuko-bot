@@ -18,7 +18,7 @@
     },
     "prod": {
         "reddit": {
-            "subreddit": "goodanimemes"
+            "subreddit": ["goodanimemes","aww","memes","ProgrammerHumor"]
         },
         "discord": {
             "animeChannelID": "638509044339834900",
