@@ -71,11 +71,11 @@ client.on('message', message => {
 		reroll(message, 'degenerate');
 	}
 	else if(message.content.match(/meme please/gi)) {
-		if(!hasPermission(sender, 'officer')) {
-			var angryReact = message.guild.emojis.find(emoji => emoji.name === 'angryzuko');
-			message.channel.send(angryReact.toString());
-			return;
-		}
+	//	if(!hasPermission(sender, 'Supreme Anime Leader')) {
+		//	var angryReact = message.guild.emojis.find(emoji => emoji.name === 'angryzuko');
+		//	message.channel.send(angryReact.toString());
+		//	return;
+		//}
 		dailyAnimePost();
 	}
 	else if(message.content.match(/(boring|lame|try again)/gi)) {
