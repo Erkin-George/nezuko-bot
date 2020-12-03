@@ -55,6 +55,10 @@ new CronJob('00 00 17 * * Mon', () => {
 	funkyFriday();
 }, null, true, 'America/Los_Angeles');
 
+new CronJob('00 19 * 12 5', () =>{
+	padoru();
+});
+
 // Job that pulls from r/awww daily?
 
 client.on('message', message => {
@@ -62,7 +66,7 @@ client.on('message', message => {
 		return;
 	}
 
-	let sender = message.guild.members.get(message.author.id);
+	// let sender = message.guild.members.get(message.author.id);
 
 	if (message.content.match(/(headpat|head pat)/gi) != null) {
 		headpat(message);
@@ -75,7 +79,7 @@ client.on('message', message => {
 		//	var angryReact = message.guild.emojis.find(emoji => emoji.name === 'angryzuko');
 		//	message.channel.send(angryReact.toString());
 		//	return;
-		//}
+		// }
 		dailyAnimePost();
 	}
 	else if(message.content.match(/(boring|lame|try again)/gi)) {
@@ -93,34 +97,14 @@ client.on('message', message => {
 	else if(message.content.match(/friday/gi)) {
 		funkyFriday();
 	}
+	else if(message.content.match(/uwu/gi)) {
+		padoru();
+	}
 	else if(!message.content.match(/here/gi)) {
 		var confusedReact = message.guild.emojis.find(emoji => emoji.name === 'nezukoconfused');
 		message.channel.send(confusedReact.toString());
 	}
 });
-
-function fetchPosts() {
-	resetPosts();
-	const randomPos = Math.floor(Math.random() * config.reddit.subreddit.length);
-	var randomSub = config.reddit.subreddit[randomPos];
-	r.getSubreddit(randomSub).getTop({ time: 'day', limit: maxLinks })
-		.then(topPosts => {
-			var post;
-			for (post of topPosts) {
-				redditLinks.push(post.url);
-
-			}
-
-			// Sort in random order
-			redditLinks.sort(() => { return 0.5 - Math.random(); });
-
-			// Send first link
-			sendNextPost();
-		})
-		.catch((reason) => {
-			console.error('There has been a problem with your fetch operation: ', reason);
-		});
-}
 
 function dailyAnimePost() {
 	resetPosts();
@@ -143,6 +127,12 @@ function dailyAnimePost() {
 		.catch((reason) => {
 			console.error('There has been a problem with your fetch operation: ', reason);
 		});
+}
+
+function padoru() {
+	const channel = client.channels.get(config.discord.animeChannelID);
+	channel.send(config.fixedcontent.padoru);
+	return true;
 }
 
 function resetPosts() {
@@ -242,16 +232,6 @@ function deletePreviousPost(requester, reason) {
 		});
 
 	return true;
-}
-
-function hasPermission(member, minRoleName) {
-	var minRole = member.guild.roles.find(role => role.name.toLowerCase() === minRoleName.toLowerCase());
-	if(!minRole) {
-		console.log('There is no role ' + minRoleName);
-		return false;
-	}
-
-	return member.highestRole.comparePositionTo(minRole) >= 0;
 }
 
 function throwBackThursday() {
