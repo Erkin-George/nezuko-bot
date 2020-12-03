@@ -55,6 +55,10 @@ new CronJob('00 00 17 * * Mon', () => {
 	funkyFriday();
 }, null, true, 'America/Los_Angeles');
 
+//Job runs during December
+new CronJob('00 00 20 12 * Fri', () => {
+	padoru();
+}, null, true, 'America/Los_Angeles');
 // Job that pulls from r/awww daily?
 
 client.on('message', message => {
@@ -92,6 +96,9 @@ client.on('message', message => {
 	}
 	else if(message.content.match(/friday/gi)) {
 		funkyFriday();
+	}
+	else if(message.content.match(/uwu/gi)) {
+		padoru();
 	}
 	else if(!message.content.match(/here/gi)) {
 		var confusedReact = message.guild.emojis.find(emoji => emoji.name === 'nezukoconfused');
@@ -270,6 +277,12 @@ function manEaterMonday() {
 function funkyFriday() {
 	const channel = client.channels.get(config.discord.channelMemes);
 	channel.send(config.fixedcontent.funkyfriday);
+	return true;
+}
+
+function padoru() {
+	const channel = client.channels.get(config.discord.animeChannelID);
+	channel.send(config.fixedcontent.padoru);
 	return true;
 }
 
