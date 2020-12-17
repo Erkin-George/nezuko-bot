@@ -56,7 +56,7 @@ new CronJob('00 00 17 * * Mon', () => {
 }, null, true, 'America/Los_Angeles');
 
 //Job runs during December
-new CronJob('00 00 20 12 * Fri', () => {
+new CronJob('00 00 20 00 * Fri', () => {
 	padoru();
 }, null, true, 'America/Los_Angeles');
 // Job that pulls from r/awww daily?
