@@ -50,11 +50,6 @@ new CronJob('00 00 13 * * Mon', () => {
 	manEaterMonday();
 }, null, true, 'America/Los_Angeles');
 
-// Job runs weekly at 17:00
-new CronJob('00 00 17 * * Mon', () => {
-	funkyFriday();
-}, null, true, 'America/Los_Angeles');
-
 //Job runs during December
 new CronJob('00 00 20 * * Fri', () => {
 	padoru();
@@ -271,12 +266,6 @@ function throwBackThursday() {
 function manEaterMonday() {
 	const channel = client.channels.get(config.discord.animeChannelID);
 	channel.send(config.fixedcontent.maneatermondaylink);
-	return true;
-}
-
-function funkyFriday() {
-	const channel = client.channels.get(config.discord.channelMemes);
-	channel.send(config.fixedcontent.funkyfriday);
 	return true;
 }
 
