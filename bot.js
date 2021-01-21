@@ -50,14 +50,9 @@ new CronJob('00 00 13 * * Mon', () => {
 	manEaterMonday();
 }, null, true, 'America/Los_Angeles');
 
-// Job runs weekly at 17:00
-new CronJob('00 00 17 * * Mon', () => {
-	funkyFriday();
-}, null, true, 'America/Los_Angeles');
-
 //Job runs during December
 new CronJob('00 00 20 * * Fri', () => {
-	padoru();
+	//padoru();
 }, null, true, 'America/Los_Angeles');
 // Job that pulls from r/awww daily?
 
@@ -71,15 +66,16 @@ client.on('message', message => {
 	if (message.content.match(/(headpat|head pat)/gi) != null) {
 		headpat(message);
 	}
-	else if(message.content.match(/(nani|what) the (frick|heck|fuck)/gi)) {
+	else if(message.content.match(/(nani|what) the (frick|heck|fuck|degen)/gi)) {
 		reroll(message, 'degenerate');
 	}
+	else if(message.content.match(/(degen|degenerate|no)/gi)) {
+		reroll(message, 'degenerate')
+	}
+	else if(message.content.match(/(degen|degenerate|no|I am sick of all this weeb shit)/gi)) {
+		reroll(message, 'degenerate')
+	}
 	else if(message.content.match(/meme please/gi)) {
-	//	if(!hasPermission(sender, 'Supreme Anime Leader')) {
-		//	var angryReact = message.guild.emojis.find(emoji => emoji.name === 'angryzuko');
-		//	message.channel.send(angryReact.toString());
-		//	return;
-		//}
 		dailyAnimePost();
 	}
 	else if(message.content.match(/(boring|lame|try again)/gi)) {
@@ -271,12 +267,6 @@ function throwBackThursday() {
 function manEaterMonday() {
 	const channel = client.channels.get(config.discord.animeChannelID);
 	channel.send(config.fixedcontent.maneatermondaylink);
-	return true;
-}
-
-function funkyFriday() {
-	const channel = client.channels.get(config.discord.channelMemes);
-	channel.send(config.fixedcontent.funkyfriday);
 	return true;
 }
 
