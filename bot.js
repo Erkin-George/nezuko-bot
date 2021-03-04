@@ -117,7 +117,6 @@ function dailyAnimePost(channel) {
   r.getSubreddit(sub)
     .getTop({ time: "day", limit: maxLinks })
     .then((topPosts) => {
-      console.log(topPosts);
       var post;
       for (post of topPosts) {
         redditLinks.push(post.url);
