@@ -119,6 +119,7 @@ function dailyAnimePost(channel) {
     .then((topPosts) => {
       var post;
       for (post of topPosts) {
+		
         redditLinks.push(post.url);
       }
 
@@ -133,6 +134,12 @@ function dailyAnimePost(channel) {
     .catch((reason) => {
       console.error("There has been a problem with your fetch operation: ", reason);
     });
+}
+
+function redditPost(channel) {
+
+	const subredditLength = config.reddit.subreddit.length();
+	var sub = config.reddit.subreddit[subredditLength];
 }
 
 function resetPosts() {
