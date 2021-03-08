@@ -114,13 +114,18 @@ function dailyAnimePost(channel) {
   resetPosts();
 
   var sub = config.reddit.subreddit[0];
-  r.getSubreddit(sub)
-    .getTop({ time: "day", limit: maxLinks })
+  var topPosts = 10
+	r.getSubreddit(sub)
+    .getTop({ time: "day", limit: topPosts })
     .then((topPosts) => {
       var post;
       for (post of topPosts) {
-		
+		  if(post.thumbnail.toUpperCase() == "NSFW") {
+			  continue;
+		  }
+		console.log("clean memes");
         redditLinks.push(post.url);
+		console.log(post.link_flair_text);
       }
 
       // Sort in random order
@@ -134,12 +139,6 @@ function dailyAnimePost(channel) {
     .catch((reason) => {
       console.error("There has been a problem with your fetch operation: ", reason);
     });
-}
-
-function redditPost(channel) {
-
-	const subredditLength = config.reddit.subreddit.length();
-	var sub = config.reddit.subreddit[subredditLength];
 }
 
 function resetPosts() {
@@ -156,7 +155,8 @@ function sendNextPost(channel) {
   if (!hasMorePosts()) {
     return false;
   }
-  channel.send(redditLinks.pop()).then((message) => {
+  var post = redditLinks.pop();
+  channel.send(post).then((message) => {
     messageHistory.push(message);
   });
 
@@ -201,7 +201,7 @@ function headpat(message) {
 }
 
 function reroll(message, reason) {
-  message.channel.send("ごめんなさい Gomen'nasai!");
+  message.channel.send("ごめんなさい Gomen'nasai! \n Rerolling, Senpai!");
 
   if (!deletePreviousPost(message, reason)) {
     message.channel.send("I can't delete it!");
@@ -209,7 +209,6 @@ function reroll(message, reason) {
   }
 
   if (hasMorePosts()) {
-    message.channel.send("Rerolling, Senpai!");
     sendNextPost(message.channel);
   } else {
     message.channel.send(
