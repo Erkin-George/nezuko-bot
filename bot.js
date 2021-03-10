@@ -121,7 +121,6 @@ function dailyRedditPost() {
   if(sub == undefined) {
     console.log("Unable to find an appropriate value from the array");
   }
-  var channel = '679950087451181086'
 
   r.getSubreddit(sub)
     .getTop({ time: "day", limit: maxLinks })
@@ -136,6 +135,7 @@ function dailyRedditPost() {
         return 0.5 - Math.random();
       });
 
+        
       // Send first link
       sendNextPost(channel);
     })
