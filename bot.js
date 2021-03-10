@@ -113,7 +113,6 @@ client.on("message", (message) => {
 function dailyRedditPost() {
 
   resetPosts();
-
   var configLength = config.reddit.subreddit.length;
   var configNumber = parseInt(Math.random() * (configLength -1));
   console.log(configLength)
@@ -124,10 +123,16 @@ function dailyRedditPost() {
 
   r.getSubreddit(sub)
     .getTop({ time: "day", limit: maxLinks })
+
     .then((topPosts) => {
       var post;
       for (post of topPosts) {
+		  if(post.thumbnail.toUpperCase() == "NSFW") {
+			  continue;
+		  }
+		console.log("clean memes");
         redditLinks.push(post.url);
+		console.log(post.link_flair_text);
       }
 
       // Sort in random order
@@ -158,7 +163,8 @@ function sendNextPost(channel) {
   if (!hasMorePosts()) {
     return false;
   }
-  channel.send(redditLinks.pop()).then((message) => {
+  var post = redditLinks.pop();
+  channel.send(post).then((message) => {
     messageHistory.push(message);
   });
 
@@ -203,7 +209,7 @@ function headpat(message) {
 }
 
 function reroll(message, reason) {
-  message.channel.send("ごめんなさい Gomen'nasai!");
+  message.channel.send("ごめんなさい Gomen'nasai! \n Rerolling, Senpai!");
 
   if (!deletePreviousPost(message, reason)) {
     message.channel.send("I can't delete it!");
@@ -211,7 +217,6 @@ function reroll(message, reason) {
   }
 
   if (hasMorePosts()) {
-    message.channel.send("Rerolling, Senpai!");
     sendNextPost(message.channel);
   } else {
     message.channel.send(
