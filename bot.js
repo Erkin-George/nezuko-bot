@@ -135,7 +135,7 @@ function dailyRedditPost() {
         return 0.5 - Math.random();
       });
 
-        
+      channel = client.channels.get(config.reddit.discord_channel[configNumber]);  
       // Send first link
       sendNextPost(channel);
     })
