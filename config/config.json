@@ -1,7 +1,7 @@
 {
     "dev": {
         "reddit": {
-            "subreddit": ["goodanimemes","aww","memes","ProgrammerHumor"]
+            "subreddit": ["goodanimemes","aww","memes","ProgrammerHumor","dndmemes"]
         },
         "discord": {
             "animeChannelID": "679950087451181086",
@@ -18,7 +18,7 @@
     },
     "prod": {
         "reddit": {
-            "subreddit": ["goodanimemes","aww","memes","ProgrammerHumor"]
+            "subreddit": ["goodanimemes","aww","memes","ProgrammerHumor","dndmemes"]
         },
         "discord": {
             "animeChannelID": "638509044339834900",

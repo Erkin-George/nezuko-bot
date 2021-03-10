@@ -36,7 +36,7 @@ const r = new snoowrap({
 new CronJob(
   "00 20 16 * * *",
   () => {
-    dailyAnimePost(client.channels.get(config.discord.animeChannelID));
+    dailyRedditPost();
   },
   null,
   true,
@@ -91,7 +91,7 @@ client.on("message", (message) => {
   } else if (message.content.match(/(degen|degenerate|no|I am sick of all this weeb shit)/gi)) {
     reroll(message, "degenerate");
   } else if (message.content.match(/meme please/gi)) {
-    dailyAnimePost(message.channel);
+    dailyRedditPost();
   } else if (message.content.match(/(boring|lame|try again)/gi)) {
     reroll(message, "boring");
   } else if (message.content.match(/(go back|undo)/gi)) {
@@ -110,10 +110,19 @@ client.on("message", (message) => {
   }
 });
 
-function dailyAnimePost(channel) {
+function dailyRedditPost() {
+
   resetPosts();
 
-  var sub = config.reddit.subreddit[0];
+  var configLength = config.reddit.subreddit.length;
+  var configNumber = parseInt(Math.random() * (configLength -1));
+  console.log(configLength)
+  var sub = config.reddit.subreddit[configNumber];
+  if(sub == undefined) {
+    console.log("Unable to find an appropriate value from the array");
+  }
+  var channel = '679950087451181086'
+
   r.getSubreddit(sub)
     .getTop({ time: "day", limit: maxLinks })
     .then((topPosts) => {
