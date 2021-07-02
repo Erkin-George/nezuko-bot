@@ -18,8 +18,8 @@
   "homepage": "https://github.com/Hashiphoto/nezuko-bot#readme",
   "dependencies": {
     "cron": "^1.8.2",
-    "discord.js": "^11.5.1",
+    "discord.js": "^11.6.4",
     "eslint": "^6.8.0",
-    "snoowrap": "^1.21.0"
+    "snoowrap": "^1.23.0"
   }
 }
