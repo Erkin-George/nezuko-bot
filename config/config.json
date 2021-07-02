@@ -1,7 +1,8 @@
 {
     "dev": {
         "reddit": {
-            "subreddit": ["goodanimemes","aww","memes","ProgrammerHumor"]
+            "subreddit": ["goodanimemes","aww","memes","ProgrammerHumor"],
+            "discord_channel": ["699463251607552010","679950087451181086","677378023259111438","681332065022771200"]
         },
         "discord": {
             "animeChannelID": "679950087451181086",
@@ -19,9 +20,11 @@
     "prod": {
         "reddit": {
             "subreddit": ["goodanimemes","aww","memes","ProgrammerHumor","pokemonmemes"]
+            "discord_channel": ["638509044339834900","653093579287166987","632081243986460692","743894777547849801"]
         },
         "discord": {
             "animeChannelID": "638509044339834900",
+            "channelTech": "743894777547849801",
             "archiveId": "671583267157442560",
             "channelNeet": "653093579287166987",
             "channelMemes": "632081243986460692"

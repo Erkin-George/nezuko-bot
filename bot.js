@@ -36,7 +36,7 @@ const r = new snoowrap({
 new CronJob(
   "00 20 16 * * *",
   () => {
-    dailyAnimePost(client.channels.get(config.discord.animeChannelID));
+    dailyRedditPost();
   },
   null,
   true,
@@ -91,7 +91,7 @@ client.on("message", (message) => {
   } else if (message.content.match(/(degen|degenerate|no|I am sick of all this weeb shit)/gi)) {
     reroll(message, "degenerate");
   } else if (message.content.match(/meme please/gi)) {
-    dailyAnimePost(message.channel);
+    dailyRedditPost();
   } else if (message.content.match(/(boring|lame|try again)/gi)) {
     reroll(message, "boring");
   } else if (message.content.match(/(go back|undo)/gi)) {
@@ -110,16 +110,29 @@ client.on("message", (message) => {
   }
 });
 
-function dailyAnimePost(channel) {
-  resetPosts();
+function dailyRedditPost() {
 
-  var sub = config.reddit.subreddit[0];
+  resetPosts();
+  var configLength = config.reddit.subreddit.length;
+  var configNumber = parseInt(Math.random() * (configLength -1));
+  console.log(configLength)
+  var sub = config.reddit.subreddit[configNumber];
+  if(sub == undefined) {
+    console.log("Unable to find an appropriate value from the array");
+  }
+
   r.getSubreddit(sub)
     .getTop({ time: "day", limit: maxLinks })
+
     .then((topPosts) => {
       var post;
       for (post of topPosts) {
+		  if(post.thumbnail.toUpperCase() == "NSFW") {
+			  continue;
+		  }
+		console.log("clean memes");
         redditLinks.push(post.url);
+		console.log(post.link_flair_text);
       }
 
       // Sort in random order
@@ -127,6 +140,7 @@ function dailyAnimePost(channel) {
         return 0.5 - Math.random();
       });
 
+      channel = client.channels.get(config.reddit.discord_channel[configNumber]);  
       // Send first link
       sendNextPost(channel);
     })
@@ -149,7 +163,8 @@ function sendNextPost(channel) {
   if (!hasMorePosts()) {
     return false;
   }
-  channel.send(redditLinks.pop()).then((message) => {
+  var post = redditLinks.pop();
+  channel.send(post).then((message) => {
     messageHistory.push(message);
   });
 
@@ -194,7 +209,7 @@ function headpat(message) {
 }
 
 function reroll(message, reason) {
-  message.channel.send("ごめんなさい Gomen'nasai!");
+  message.channel.send("ごめんなさい Gomen'nasai! \n Rerolling, Senpai!");
 
   if (!deletePreviousPost(message, reason)) {
     message.channel.send("I can't delete it!");
@@ -202,7 +217,6 @@ function reroll(message, reason) {
   }
 
   if (hasMorePosts()) {
-    message.channel.send("Rerolling, Senpai!");
     sendNextPost(message.channel);
   } else {
     message.channel.send(
