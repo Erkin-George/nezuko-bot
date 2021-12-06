@@ -131,7 +131,7 @@ function dailyRedditPost() {
 			  continue;
 		  }
 		console.log("clean memes");
-        redditLinks.push(post.url);
+        redditLinks.push(post.title + '\n' + post.url);
 		console.log(post.link_flair_text);
       }
 

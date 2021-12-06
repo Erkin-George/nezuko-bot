@@ -1,13 +1,13 @@
 {
     "dev": {
         "reddit": {
-            "subreddit": ["goodanimemes","memes","ProgrammerHumor"],
-            "discord_channel": ["699463251607552010","679950087451181086","677378023259111438","681332065022771200"]
+            "subreddit": ["goodanimemes","memes","ProgrammerHumor","lotrmemes"],
+            "discord_channel": ["699463251607552010","679950087451181086","677378023259111438","681332065022771200","679950087451181086"]
         },
         "discord": {
             "animeChannelID": "679950087451181086",
             "archiveId": "681332065022771200",
-            "channelMemes": "699463251607552010",
+            "channelMemes": "699463251607552010"
         },
         "fixedcontent": {
             "throwbackthursdaylink": "https://www.youtube.com/watch?v=Q8hp2IkI2es",
@@ -18,8 +18,8 @@
     },
     "prod": {
         "reddit": {
-            "subreddit": ["goodanimemes","memes","ProgrammerHumor","pokemonmemes"],
-            "discord_channel": ["638509044339834900","653093579287166987","632081243986460692","743894777547849801"]
+            "subreddit": ["goodanimemes","memes","ProgrammerHumor","lotrmemes"],
+            "discord_channel": ["638509044339834900","653093579287166987","632081243986460692","743894777547849801","679950087451181086"]
         },
         "discord": {
             "animeChannelID": "638509044339834900",
