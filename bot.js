@@ -69,7 +69,7 @@ new CronJob(
 new CronJob(
   "00 00 20 * * Fri",
   () => {
-    //padoru();
+    padoru();
   },
   null,
   true,
@@ -88,7 +88,7 @@ client.on("message", (message) => {
     reroll(message, "degenerate");
   } else if (message.content.match(/(degen|degenerate|no)/gi)) {
     reroll(message, "degenerate");
-  } else if (message.content.match(/(degen|degenerate|no|I am sick of all this weeb shit)/gi)) {
+  } else if (message.content.match(/(degen|degenerate|I am sick of all this weeb shit)/gi) || message.content == "no") {
     reroll(message, "degenerate");
   } else if (message.content.match(/meme please/gi)) {
     dailyRedditPost();
@@ -131,7 +131,7 @@ function dailyRedditPost() {
 			  continue;
 		  }
 		console.log("clean memes");
-        redditLinks.push(post.url);
+        redditLinks.push(post.title + '\n' + post.url);
 		console.log(post.link_flair_text);
       }
 
