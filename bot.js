@@ -67,7 +67,7 @@ new CronJob(
 
 //Job runs during December
 new CronJob(
-  "00 00 20 * * Fri",
+  "00 00 20 11 * Fri",
   () => {
     padoru();
   },
