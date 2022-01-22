@@ -69,7 +69,7 @@ new CronJob(
 new CronJob(
   "00 00 20 * * Fri",
   () => {
-    padoru();
+    //padoru();
   },
   null,
   true,
